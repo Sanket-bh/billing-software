@@ -15,13 +15,11 @@ public class Invoice {
     private double finalAmount;
     private List<InvoiceItem> items;
 
-    // ✅ REQUIRED no-arg constructor
     public Invoice() {
         this.invoiceId = UUID.randomUUID().toString();
         this.invoiceDate = LocalDate.now();
     }
 
-    // existing constructors (keep them if you want)
     public Invoice(List<InvoiceItem> items) {
         this();
         this.items = items;

@@ -5,6 +5,7 @@ import com.boot.billing_software.dto.InvoiceResponseDTO;
 import com.boot.billing_software.entity.Invoice;
 import com.boot.billing_software.entity.InvoiceItem;
 import com.boot.billing_software.entity.Product;
+import com.boot.billing_software.exception.InsufficientStockException;
 import com.boot.billing_software.exception.ResourceNotFoundException;
 import com.boot.billing_software.repository.CustomerRepository;
 import com.boot.billing_software.repository.InvoiceRepository;
@@ -34,7 +35,6 @@ public class InvoiceService {
             throw new ResourceNotFoundException("Customer not found");
         }
 
-        // ✅ CREATE INVOICE USING NO-ARG CONSTRUCTOR (IMPORTANT)
         Invoice invoice = new Invoice();
         invoice.setCustomerId(dto.getCustomerId());
 
@@ -50,14 +50,14 @@ public class InvoiceService {
                 throw new ResourceNotFoundException("Product not found");
             }
 
-            // ❌ Stock check
+
             if (product.getStockQuantity() < pq.getQuantity()) {
-                throw new RuntimeException(
+                throw new InsufficientStockException(
                         "Insufficient stock for product: " + product.getName()
                 );
             }
 
-            // ✔ Price & GST calculation
+
             double price = product.getPrice() * pq.getQuantity();
             double tax = price * product.getGstPercentage() / 100;
 
@@ -71,7 +71,6 @@ public class InvoiceService {
             subTotal += price;
             totalTax += tax;
 
-            // ✔ Reduce stock
             product.setStockQuantity(
                     product.getStockQuantity() - pq.getQuantity()
             );
@@ -80,17 +79,14 @@ public class InvoiceService {
             items.add(item);
         }
 
-        // ✔ Set calculated values
         invoice.setItems(items);
         invoice.setTotalAmount(subTotal);
         invoice.setTotalTax(totalTax);
         invoice.setDiscount(dto.getDiscount());
         invoice.setFinalAmount(subTotal + totalTax - dto.getDiscount());
 
-        // ✔ Save invoice
         invoiceRepository.save(invoice);
 
-        // ✔ Prepare response DTO
         InvoiceResponseDTO response = new InvoiceResponseDTO();
         response.setInvoiceId(invoice.getInvoiceId());
         response.setInvoiceDate(invoice.getInvoiceDate());

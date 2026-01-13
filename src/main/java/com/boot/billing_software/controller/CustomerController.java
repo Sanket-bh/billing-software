@@ -33,6 +33,16 @@ public class CustomerController {
         return new ResponseEntity<>(service.addCustomer(customer),HttpStatus.CREATED);
     }
 
+    @DeleteMapping("/{id}")
+    public String deleteById(@PathVariable int id){
+        try{
+            service.deleteById(id);
+            return "Deleted Successfully";
+        } catch (Exception e) {
+            return "Failed to delete";
+        }
+    }
+
     @GetMapping("/{id}")
     public Customer getCustById(@PathVariable int id){
         return service.getCustById(id);
@@ -46,4 +56,6 @@ public class CustomerController {
             return ResponseEntity.notFound().build();
         }
     }
+
+
 }

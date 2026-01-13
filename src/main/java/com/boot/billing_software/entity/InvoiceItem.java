@@ -16,7 +16,6 @@ public class InvoiceItem {
         this.id = UUID.randomUUID().toString();
     }
 
-    // (Optional) keep parameterized constructor if you want
     public InvoiceItem(String id, int productId, int quantity,
                        double price, double taxAmount, double total) {
         this.id = id;

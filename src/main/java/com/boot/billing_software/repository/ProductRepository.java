@@ -24,6 +24,8 @@ public class ProductRepository {
     public Product updateById(int id, Product product) {
         Product existingProduct = findById(id);
         if (existingProduct != null) {
+            existingProduct.setName(product.getName());
+            existingProduct.setPrice(product.getPrice());
             existingProduct.setStockQuantity(product.getStockQuantity());
             existingProduct.setPrice(product.getPrice());
 

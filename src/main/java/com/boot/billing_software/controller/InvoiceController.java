@@ -2,8 +2,11 @@ package com.boot.billing_software.controller;
 import com.boot.billing_software.dto.InvoiceRequestDTO;
 import com.boot.billing_software.dto.InvoiceResponseDTO;
 import com.boot.billing_software.entity.Invoice;
+import com.boot.billing_software.exception.InsufficientStockException;
+import com.boot.billing_software.exception.ResourceNotFoundException;
 import com.boot.billing_software.services.InvoiceService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,25 +20,41 @@ public class InvoiceController {
 
     // POST /invoices
     @PostMapping
-    public InvoiceResponseDTO createInvoice(@RequestBody InvoiceRequestDTO request) {
-        return invoiceService.generateInvoice(request);
+    public ResponseEntity<InvoiceResponseDTO> createInvoice(@RequestBody InvoiceRequestDTO request) {
+        try{
+            return ResponseEntity.ok(invoiceService.generateInvoice(request));
+        } catch (InsufficientStockException e) {
+            throw e;
+        }
     }
 
     // GET /invoices
     @GetMapping
-    public List<Invoice> getAllInvoices() {
-        return invoiceService.getAllInvoices();
+    public ResponseEntity<List<Invoice>> getAllInvoices() {
+        try{
+            return ResponseEntity.ok(invoiceService.getAllInvoices());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     // GET /invoices/{id}
     @GetMapping("/{id}")
-    public Invoice getInvoice(@PathVariable String id) {
-        return invoiceService.getInvoiceById(id);
+    public ResponseEntity<Invoice> getInvoice(@PathVariable String id) {
+        try{
+            return ResponseEntity.ok(invoiceService.getInvoiceById(id));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     // GET /invoices/customer/{customerId}
     @GetMapping("/customer/{customerId}")
-    public List<Invoice> getByCustomer(@PathVariable int customerId) {
-        return invoiceService.getInvoicesByCustomerId(customerId);
+    public ResponseEntity<List<Invoice>> getByCustomer(@PathVariable int customerId) {
+        try{
+            return ResponseEntity.ok(invoiceService.getInvoicesByCustomerId(customerId));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 }

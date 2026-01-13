@@ -9,15 +9,15 @@ import java.util.List;
 
 @Repository
 public class CustomerRepository {
-    private final ArrayList<Customer> list = new ArrayList<>();
+    private final List<Customer> customers = new ArrayList<>();
 
     public Customer addCustomer(Customer customer) {
-        list.add(customer);
+        customers.add(customer);
         return customer;
     }
 
     public Customer findCustById(int id) {
-        return list.stream().filter(c -> c.getId() == id).findFirst().
+        return customers.stream().filter(c -> c.getId() == id).findFirst().
                 orElse(null);
     }
 
@@ -35,13 +35,22 @@ public class CustomerRepository {
     }
 
     public List<Customer> getAllCust() {
-        return list;
+
+        return customers;
     }
 
     public Customer getCustById(int id) {
-        return list.stream().filter(c -> c.getId() == id).findFirst().
+        return customers.stream().filter(c -> c.getId() == id).findFirst().
                 orElse(null);
     }
 
 
+    public void deleteById(int id) {
+        for (int i = 0; i < customers.size(); i++) {
+            if (customers.get(i).getId() == id) {
+                customers.remove(i);
+                break;
+            }
+        }
+    }
 }
